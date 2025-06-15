@@ -31,7 +31,7 @@ public class RendezVousController {
     }
 
     // Endpoint pour qu'un patient puisse demander un rendez-vous.
-    // Il utilise maintenant le RendezVousService.
+  
     @PostMapping("/demander")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<RendezVous> demanderRendezVous(@RequestBody DemandeRendezVousRequest request, Authentication authentication) {
@@ -53,6 +53,5 @@ public class RendezVousController {
     }
 
     // Un DTO (Data Transfer Object) pour représenter la requête de création de RDV.
-    // C'est une bonne pratique pour ne pas exposer directement les modèles.
     public record DemandeRendezVousRequest(Long medecinId, LocalDateTime dateHeure) {}
 }
