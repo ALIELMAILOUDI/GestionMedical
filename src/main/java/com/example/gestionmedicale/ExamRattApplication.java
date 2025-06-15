@@ -19,11 +19,6 @@ public class ExamRattApplication {
         SpringApplication.run(ExamRattApplication.class, args);
     }
 
-    /**
-     * Ce Bean s'exécute au démarrage de l'application pour initialiser la base de données
-     * avec des données de test. C'est la méthode recommandée pour gérer la logique
-     * comme l'encodage des mots de passe, qui ne peut pas être fait dans un simple fichier data.sql.
-     */
     @Bean
     @Transactional // Recommandé pour les opérations complexes de base de données
     CommandLineRunner commandLineRunner(
