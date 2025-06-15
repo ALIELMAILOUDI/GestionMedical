@@ -1,8 +1,7 @@
 package com.example.gestionmedicale;
-
-// Les imports restent les mêmes...
+import com.example.gestionmedicale.repository.ServiceMedicalRepository;
 import com.example.gestionmedicale.model.*;
-import com.example.gestionmedicale.repository.*;
+import com.example.gestionmedicale.repository.*; // Importer tous les repositories
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,13 +19,16 @@ public class ExamRattApplication {
         SpringApplication.run(ExamRattApplication.class, args);
     }
 
+    /**
+     * Ce Bean s'exécute au démarrage de l'application pour initialiser la base de données
+     * avec des données de test. C'est la méthode recommandée pour gérer la logique
+     * comme l'encodage des mots de passe, qui ne peut pas être fait dans un simple fichier data.sql.
+     */
     @Bean
-    @Transactional
+    @Transactional // Recommandé pour les opérations complexes de base de données
     CommandLineRunner commandLineRunner(
             PatientRepository patientRepository,
             MedecinRepository medecinRepository,
-            // ServiceMedicalRepository n'est plus strictement nécessaire ici si rien ne l'utilise
-            // mais on peut le garder si d'autres parties de l'app en ont besoin.
             ServiceMedicalRepository serviceMedicalRepository,
             DossierMedicalRepository dossierMedicalRepository,
             RendezVousRepository rendezVousRepository,
@@ -35,7 +37,7 @@ public class ExamRattApplication {
         return args -> {
             System.out.println("---- Initialisation des données de test... ----");
 
-            // 1. Créer les services médicaux (ils existent maintenant indépendamment)
+            // 1. Créer les services médicaux
             ServiceMedical serviceCardio = new ServiceMedical();
             serviceCardio.setNom("Cardiologie");
             serviceCardio.setType("Service public");
@@ -46,14 +48,14 @@ public class ExamRattApplication {
             servicePediatrie.setType("Service privé");
             serviceMedicalRepository.save(servicePediatrie);
 
-            // 2. Créer l'utilisateur Médecin (SANS le lien vers ServiceMedical)
+            // 2. Créer l'utilisateur Médecin
             Medecin medecin = new Medecin();
             medecin.setNom("Dr. House");
             medecin.setSpecialite("Diagnosticien");
             medecin.setUsername("docteur.house");
             medecin.setPassword(passwordEncoder.encode("password"));
             medecin.setRoles("ROLE_MEDECIN");
-            // medecin.setServiceMedical(serviceCardio); // <-- LIGNE SUPPRIMÉE
+            medecin.setServiceMedical(serviceCardio);
             medecinRepository.save(medecin);
 
             // 3. Créer l'utilisateur Admin
@@ -63,6 +65,7 @@ public class ExamRattApplication {
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("password"));
             admin.setRoles("ROLE_ADMIN");
+            // L'admin n'a pas de service médical associé
             medecinRepository.save(admin);
 
             // 4. Créer l'utilisateur Patient et son dossier médical
@@ -73,7 +76,7 @@ public class ExamRattApplication {
             patientJohn.setUsername("john.doe");
             patientJohn.setPassword(passwordEncoder.encode("password"));
             patientJohn.setRoles("ROLE_PATIENT");
-            patientRepository.save(patientJohn);
+            patientRepository.save(patientJohn); // On sauvegarde d'abord le patient pour obtenir un ID
 
             DossierMedical dossierJohn = new DossierMedical();
             dossierJohn.setHistorique("Historique initial pour John Doe.");
