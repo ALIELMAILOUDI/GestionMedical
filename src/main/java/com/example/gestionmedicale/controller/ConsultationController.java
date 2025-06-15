@@ -28,7 +28,7 @@ public class ConsultationController {
 
     @PostMapping
     @PreAuthorize("hasRole('MEDECIN')")
-    @Transactional // Transactionnel est important pour assurer la cohérence des deux opérations
+    @Transactional 
     public ResponseEntity<Consultation> createConsultation(@RequestBody CreateConsultationRequest request) {
 
         // 1. Trouver le rendez-vous
